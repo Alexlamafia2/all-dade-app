@@ -6,7 +6,7 @@ export default function Contact() {
   // ==================================================== STATE =================================================================
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const [modalIsShown, setModalIsShown] = useState(false);
 
   const [enteredName, setEnteredName] = useState("");
@@ -90,8 +90,7 @@ export default function Contact() {
 
   async function formSubmissionHandler(event) {
     setIsLoading(true);
-    setError(null);
-    // setHttpError(false);
+    // setError(null);
     event.preventDefault();
 
     setEnteredNameTouched(true);
@@ -110,43 +109,28 @@ export default function Contact() {
     }
 
     try {
-      const response = await fetch(
-        "https://emailapi.cloudconsultingandsolutions.com/send",
-        // "https://email-api-5bf64-default-rtdb.firebaseio.co",
-        {
-          method: "POST",
-          body: JSON.stringify(info),
-          // mode: "no-cors",
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-            "Content-Type": "application/json",
-            "CF-Access-Client-Id": "b3715a15e2cf684664b6ac7bbfb935f9.access",
-            "CF-Access-Client-Secret":
-              "b6568b710a67199c90fcb4e58b7d781613b0b6be0561874e3e0cfbc1342a5bec",
-          },
-        }
-      );
+      const response = await fetch("https://emailapi.cloudconsultingandsolutions.com/send", {
+        method: "POST",
+        body: JSON.stringify(info),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*",
+          "Content-Type": "application/json",
+          "CF-Access-Client-Id": "b3715a15e2cf684664b6ac7bbfb935f9.access",
+          "CF-Access-Client-Secret":
+            "b6568b710a67199c90fcb4e58b7d781613b0b6be0561874e3e0cfbc1342a5bec",
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error("Something went wrong!");
+      // const data = await response.json();
+
+      if (response.status !== 200) {
+        console.log("Status code: " + response.status);
+        setIsLoading(false);
       }
-
-      if (response.ok) {
-        throw new Error("Message Sent!");
-      }
-
-      console.log(response.json());
-      const data = await response.json();
-      console.log(data);
-      console.log(response);
     } catch (error) {
-      setError("Something Went Wrong");
-
-      setIsLoading(true);
+      setIsLoading(false);
     }
-
-    // setIsLoading(false);
 
     info = {
       from: "",
@@ -174,18 +158,18 @@ export default function Contact() {
 
   let content = <p></p>;
 
-  if (error) {
+  if (isLoading === false) {
     content = (
       <h1 className="content-message" style={{ color: "red" }}>
-        {error}
+        Something went wrong.
       </h1>
     );
   }
 
-  if (isLoading) {
+  if (isLoading === true) {
     content = (
       <h1 className="content-message" style={{ color: "green" }}>
-        {error}
+        Message Sent!
       </h1>
     );
   }

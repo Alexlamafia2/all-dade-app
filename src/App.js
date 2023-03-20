@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import CarouselSection from "./components/Body/Carousel/CarouselSection";
 import Contact from "./components/Body/Contact/Contact";
+// import ContactTest from "./components/Body/Contact/Contact";
 
 import Services from "./components/Body/ServicesSection/Services";
 import VideoSection from "./components/Body/VideoSection/VideoSection";
