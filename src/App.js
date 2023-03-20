@@ -10,19 +10,15 @@ import "./App.css";
 // import Modal from "./components/UI/Modal";
 
 function App() {
-
-
-
-
   return (
     <Fragment>
+      <NavigationBar></NavigationBar>
       <main>
-        <NavigationBar></NavigationBar>
         <VideoSection></VideoSection>
         <Services></Services>
         <CarouselSection></CarouselSection>
-        <Contact  ></Contact>
-  
+        <Contact></Contact>
+
         <Footer></Footer>
       </main>
     </Fragment>

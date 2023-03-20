@@ -5,12 +5,9 @@ import "./Contact.css";
 export default function Contact() {
   // ==================================================== STATE =================================================================
 
-  const [httpError, setHttpError] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [modalIsShown, setModalIsShown] = useState(false);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [didSubmit, setDidSubmit] = useState(false);
 
   const [enteredName, setEnteredName] = useState("");
   const [enteredNameTouched, setEnteredNameTouched] = useState(false);
@@ -24,13 +21,13 @@ export default function Contact() {
   const [enteredBody, setEnteredBody] = useState("");
 
   // ========================================================== VALIDITY CSS CODE ================================================
-  const enteredNameIsValid = enteredName.trim() !== "" ;
+  const enteredNameIsValid = enteredName.trim() !== "";
   const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
 
   const enteredPhoneIsValid = enteredPhone.trim() !== "";
-  const phoneInputIsInvalid = !enteredPhoneIsValid && enteredPhoneTouched ;
-  const enteredPhoneIsValidTwo =  enteredPhone.trim().length === 10;
-  const phoneInputIsInvalidTwo = !enteredPhoneIsValidTwo && enteredPhoneTouched ;
+  const phoneInputIsInvalid = !enteredPhoneIsValid && enteredPhoneTouched;
+  const enteredPhoneIsValidTwo = enteredPhone.trim().length === 10;
+  const phoneInputIsInvalidTwo = !enteredPhoneIsValidTwo && enteredPhoneTouched;
 
   const enteredEmailIsValid = enteredEmail.includes("@");
   const emailInputIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
@@ -92,7 +89,9 @@ export default function Contact() {
   // ================================================ FORM SUBMISSION HANDLER ===========================================================
 
   async function formSubmissionHandler(event) {
-    setHttpError(false);
+    setIsLoading(true);
+    setError(null);
+    // setHttpError(false);
     event.preventDefault();
 
     setEnteredNameTouched(true);
@@ -110,12 +109,10 @@ export default function Contact() {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
       const response = await fetch(
-        // "https://emailapi.cloudconsultingandsolutions.com/send",
-        "https://email-api-5bf64-default-rtdb.firebaseio.com/email.json",
+        "https://emailapi.cloudconsultingandsolutions.com/send",
+        // "https://email-api-5bf64-default-rtdb.firebaseio.co",
         {
           method: "POST",
           body: JSON.stringify(info),
@@ -130,19 +127,26 @@ export default function Contact() {
           },
         }
       );
-      // console.log(JSON.stringify(info));
 
       if (!response.ok) {
-        setHttpError(true);
+        throw new Error("Something went wrong!");
       }
 
+      if (response.ok) {
+        throw new Error("Message Sent!");
+      }
+
+      console.log(response.json());
       const data = await response.json();
       console.log(data);
+      console.log(response);
     } catch (error) {
-      setHttpError(true);
+      setError("Something Went Wrong");
+
+      setIsLoading(true);
     }
-    setIsSubmitting(false);
-    setDidSubmit(true);
+
+    // setIsLoading(false);
 
     info = {
       from: "",
@@ -168,30 +172,31 @@ export default function Contact() {
   const phoneInputClasses = phoneInputIsInvalid ? " invalid" : " ";
   const phoneInputClassesTwo = phoneInputIsInvalidTwo ? " invalid" : " ";
 
-  console.log(httpError);
-  const modalContent = (
-    <Fragment>
-      {!httpError ? (
-        <h3 className="modal-message">Message Sent!</h3>
-      ) : (
-        <h3 className="modal-message" style={{color: 'red'}}>Something went wrong</h3>
-      )}
-      <button className="close-button" onClick={hideModalHandler}>
-        Close
-      </button>
-    </Fragment>
-  );
+  let content = <p></p>;
 
-  const isSubmittingModalContent = <p>Sending order data...</p>;
+  if (error) {
+    content = (
+      <h1 className="content-message" style={{ color: "red" }}>
+        {error}
+      </h1>
+    );
+  }
 
+  if (isLoading) {
+    content = (
+      <h1 className="content-message" style={{ color: "green" }}>
+        {error}
+      </h1>
+    );
+  }
   return (
     <Fragment>
       {modalIsShown && (
         <Modal onClose={hideModalHandler}>
-
-          {isSubmitting && isSubmittingModalContent}
-          {didSubmit && modalContent}
-
+          {content}
+          <button className="close-button" onClick={hideModalHandler}>
+            Close
+          </button>
         </Modal>
       )}
       <section className="contact-section" id="contact">
